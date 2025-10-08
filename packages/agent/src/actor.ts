@@ -178,6 +178,8 @@ interface ActorMetadata {
 }
 
 const metadataSymbol = Symbol.for('ic-agent-metadata');
+let defaultAgent: HttpAgent | undefined = undefined;
+const getDefaultAgent = () => defaultAgent ??= HttpAgent.createSync();
 
 export interface CreateActorClassOpts {
   httpDetails?: boolean;
@@ -348,7 +350,7 @@ function _createActorMethod(
         }),
       };
 
-      const agent = options.agent || actor[metadataSymbol].config.agent || new HttpAgent();
+      const agent = options.agent || actor[metadataSymbol].config.agent || getDefaultAgent();
       const cid = Principal.from(options.canisterId || actor[metadataSymbol].config.canisterId);
       const arg = IDL.encode(func.argTypes, args);
 
@@ -399,7 +401,7 @@ function _createActorMethod(
         }),
       };
 
-      const agent = options.agent || actor[metadataSymbol].config.agent || HttpAgent.createSync();
+      const agent = options.agent || actor[metadataSymbol].config.agent || getDefaultAgent();
 
       const { canisterId, effectiveCanisterId, pollingOptions } = {
         ...DEFAULT_ACTOR_CONFIG,
