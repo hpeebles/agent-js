@@ -226,7 +226,7 @@ function getDefaultFetch(): typeof fetch {
   );
 }
 
-function determineHost(configuredHost: string | undefined): string {
+function determineHost(configuredHost: string | undefined): URL {
   let host: URL;
   if (configuredHost !== undefined) {
     if (!configuredHost.match(/^[a-z]+:/) && typeof window !== 'undefined') {
@@ -258,7 +258,7 @@ function determineHost(configuredHost: string | undefined): string {
       host = new URL('https://icp-api.io');
     }
   }
-  return host.toString();
+  return host;
 }
 
 interface V1HttpAgentInterface {
@@ -341,8 +341,7 @@ export class HttpAgent implements Agent {
       this.rootKey = hexToBytes(IC_ROOT_KEY);
     }
 
-    const host = determineHost(options.host);
-    this.host = new URL(host);
+    this.host = determineHost(options.host);
 
     if (options.verifyQuerySignatures !== undefined) {
       this.#verifyQuerySignatures = options.verifyQuerySignatures;
@@ -1208,7 +1207,7 @@ export class HttpAgent implements Agent {
   }
 
   /**
-   * Allows agent to sync its time with the network. Can be called during intialization or mid-lifecycle if the device's clock has drifted away from the network time. This is necessary to set the Expiry for a request
+   * Allows agent to sync its time with the network. Can be called during initialization or mid-lifecycle if the device's clock has drifted away from the network time. This is necessary to set the Expiry for a request
    * @param {Principal} canisterIdOverride - Pass a canister ID if you need to sync the time with a particular subnet. Uses the ICP ledger canister by default.
    */
   public async syncTime(canisterIdOverride?: Principal): Promise<void> {
